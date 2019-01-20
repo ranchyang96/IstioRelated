@@ -1,0 +1,64 @@
+Istio lets you connect, secure, control, and observe services.
+
+Service mesh is the network of microservices that make up applications and the interactions between them.
+
+functionality:
+- auto load balancing for HTTP, gRPC, WebSocket and TCP traffic
+- fine grained control of traffic behavior with routing rules, retries, failovers and fault injection
+- a pluggable policy layer and configuration API supporting access controls, rate limits and egress
+- automatic metrics, logs, and traces for all traffic within a cluster, including cluster ingress and egress
+- secure service-to-service communication in a cluster with strong identity-based authentication and authorization
+
+core features:
+- traffic management: rule configuration, traffic routing let you control traffic flows and API calls
+- security: secure communication channel, authentication, authorization, and encryption of service communication at scale
+- observability: tracing, monitoring, logging
+- platform support: deployment on Kubernetes, registered with Consul, running on individual VM
+
+ARCHITECTURE
+Data plane is composed of intelligent proxies (Envoy) deployed as sidecars. Envoy proxies work with Mixer (policy and telemetry hub) to control all network communication.
+Each service has its own proxy. Traffic between proxies is using HTTP1/2, gRPC or TCP, with or without mTLS.
+Envoy:
+high-performance proxy developed in C++ to mediate all inbound and outbound traffic for all services in the service mesh
+extracts a wealth of signals about traffic behavior as request level attributes and send to Mixer
+
+Control plane configures proxies to route traffic and configures Mixers to enforce policies and collect telemetry.
+Pilot config data to proxies, Mixer check policies with proxies, Citadel applies mTLS to proxies
+- Mixer: enforces access control and usage policies across the service mesh and collect telemetry
+- Pilot: provides service discovery for Envoy, traffic management (AB tests, canary) and resiliency (timeouts, retries, circuit breakers)
+- Citadel: provides strong service-to-service and end-user authentication with built-in identity and credential management
+
+PILOT - TRAFFIC MANAGEMENT
+which rule the traffic should follow instead of which specific pods should receive traffic.
+proportion of traffic routed to a new version / content of request decides the destination of request
+let you specify which rules to use and configure failure recovery features (timeouts, retries, circuit breakers)
+maintain a canonical model for all services and use this as service discovery
+
+service versions subdivide service instances by versions
+clients know nothing about versions and Envoy decides where to go
+
+requests have request flow to follow, which is a list of proxies 
+AB testing, canary testing, forwarding to external services are all possible
+
+provides loadbalancing for traffic to multiple instances of the same service version
+services in the mesh access each other using DNS names, HTTP traffic rerouted through Envoy, Envoy distributes the traffic across instances in the load balancing pool
+instead of Envoy's complex LB algorithm, Istio only has roundrobin, random, least weight
+
+failures (timeouts, retries, number limit of requests and connections, health checks, circuit breakers)
+
+
+
+
+****************************************************************************
+Appendencies
+gRPC is an open source remote procedure call system initially developed at Google.
+It uses HTTP/2 for transport, Protocol Buffers as the interface description language, and provides features such as authentication, bidirectional streaming and flow control, blocking or nonblocking bindings, and cancellation and timeouts.
+It generates cross-platform client and server bindings for many languages.
+Most common usage scenarios include connecting services in microservices style architecture and connect mobile devices, browser clients to backend services.
+
+Kubernetes: solution for orchestrating containers, extensive than Docker Swarm.
+It works around the concept of pods, which are scheduling units (and can contain one or more containers) in the Kubernetes ecosystem, and they are distributed among nodes to provide high availability.
+
+mTLS: Mutual authentication or two-way authentication refers to two parties authenticating each other at the same time, being a default mode of authentication in some protocols.
+
+circuit breaker: when an action involves multiple services but some of them are down, use open, halfopen, closed states to make it fault tolerant
