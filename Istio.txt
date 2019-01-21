@@ -44,8 +44,74 @@ provides loadbalancing for traffic to multiple instances of the same service ver
 services in the mesh access each other using DNS names, HTTP traffic rerouted through Envoy, Envoy distributes the traffic across instances in the load balancing pool
 instead of Envoy's complex LB algorithm, Istio only has roundrobin, random, least weight
 
-failures (timeouts, retries, number limit of requests and connections, health checks, circuit breakers)
+failures (timeouts, retries, number limit of requests and connections, health checks, circuit breakers(passive health checks))
+special HTTP headers can override timeout and retries when Apps want to.
+Apps still handle failures, apps' failure recovery is separated from Istio's
 
+Fault injection
+You can configure faults to be injected into requests that match specific conditions. You can further restrict the percentage of requests that should be subjected to faults. Two types of faults can be injected: delays and aborts.
+
+Rule Configuration
+- VirtualService: defines the rules that control routing (95% of incoming traffic for a ''reviews'' service go to version1)
+- DestinationRule: configures the policy set to be applied to a request after VirtualService routing happened (set load balancer, circuit breaker, TLS, ...)
+- ServiceEntry: used to enable requests to services from outside of Istio
+- Gateway: configures a load balancer for HTTP/TCP traffic, working at edge of a mesh for ingress traffic
+
+conditional rules and multiple matches are allowed (andor) and priority
+
+CITADEL - SECURITY
+also involves Envoy(for secure communication between client and server), pilot(for authentication policies and secure naming information) and mixer(for authorization and auditing)
+on client side, server identity is checked with secure naming information
+on server side, based on authorization policies
+
+share same identity document with SPIFFE
+PKI(Public Key Infrastructure) used
+
+two types of authentication:
+- transport authentication: verify clients making the connection, offer mTLS as a stack of solution
+- origin authentication: end-user authentication, verify the requester
+
+mTLS authentication:
+- Istio re-routes the outbound traffic from a client to the client’s local sidecar Envoy.
+- The client side Envoy starts a mutual TLS handshake with the server side Envoy. During the handshake, the client side Envoy also does a secure naming check to verify that the service account presented in the server certificate is authorized to run the target service.
+- The client side Envoy and the server side Envoy establish a mutual TLS connection, and Istio forwards the traffic from the client side Envoy to the server side Envoy.
+- After authorization, the server side Envoy forwards the traffic to the server service through local TCP connections.
+
+secure naming contains N-to-N mappings encoded in certificates which means A is allowed and authorized to run B
+authentication policies: specify the policies for specific services
+policy storage scope: Mesh-scope policy (there can only be one), namespace-scope policy, service-specific scope (this don't need to be stored)
+narrowest match first
+
+authorization: role-based access control
+.yaml files go to Istio Config server and send them to pilot which send policies to proxies for services
+policy looks like:
+The combination of ServiceRole and ServiceRoleBinding specifies: who is allowed to do what under which conditions. Specifically:
+- who refers to the subjects section in ServiceRoleBinding.
+- what refers to the permissions section in ServiceRole.
+- which conditions refers to the conditions section you can specify with the Istio attributes in either ServiceRole or ServiceRoleBinding.
+
+MIXER - POLICIES AND TELEMETRY
+The Envoy sidecar logically calls Mixer before each request to perform precondition checks, and after each request to report telemetry.
+The sidecar has local caching such that a large percentage of precondition checks can be performed from cache.
+Additionally, the sidecar buffers outgoing telemetry such that it only calls Mixer infrequently.
+
+mixer provides:
+- backend abstraction: insulates the rest of Istio from implementation of individual infrastructure backends
+- Intermediation: operators have control over interactions between mesh and infrastructure backends
+
+reliability and latency:
+- statelessness: doesn't manage its own persistent storage
+- hardening: designed to be highly reliable
+- caching and buffering: accumulate a large amount of transient ephemeral state
+
+first-level cache for each sidecar, second-level shared cache at Mixer
+
+Attributes: description of a specific service request or the environment for the request
+
+Configuration Model:
+configuring a set of handlers, determine the adapter of mixer to be used
+configuring a set of instances, describe how to map request attributes into adapter inputs
+configuring a set of rules, describe when an adapter is called and which instance is given
 
 
 
@@ -61,4 +127,10 @@ It works around the concept of pods, which are scheduling units (and can contain
 
 mTLS: Mutual authentication or two-way authentication refers to two parties authenticating each other at the same time, being a default mode of authentication in some protocols.
 
-circuit breaker: when an action involves multiple services but some of them are down, use open, halfopen, closed states to make it fault tolerant
+circuit breaker: when an action involves multiple services but some of them are down, circuit breaker makes it fault tolerant
+It wraps a function with a monitor that tracks failures. The circuit breaker has 3 distinct states, Closed, Open, and Half-Open
+Closed when everything is normal, all calls pass through to the services. when the number of failures exceeds a threshold, go to open.
+Open, returns error without executing the function
+Half-open, after a timeout, go to halfopen to check if the underlying problem still exists.
+
+SPIFFE: standard which provides a specification for a framework capable of bootstrapping and issuing identities to services across heterogeneous environments.
