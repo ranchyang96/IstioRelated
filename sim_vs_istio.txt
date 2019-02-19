@@ -1,0 +1,13 @@
+In the simulator, it's assumed that each pod has one application, no pod abstraction implemented.
+Only one kind of protocol including retransmission is simulated, no other protocols and load balancing are implemented.
+Fault injection contains only delays, while Istio also has aborts (this should be easy to add).
+A few interfaces are left (like heartbeats) but not completely implemented. Fault Detection and automatic health checks should be able to simulated with them.
+No security feature is seen.
+Logs are only printed inside apps, which are not complete.
+Monitoring for connections and heartbeats are missing.
+Direct memory access is used instead of actual traffic.
+
+No control plane features are covered.
+The simulator covers only the service mesh part.
+In the notion of fault injection for all kind of bugs in data planes, this is somewhat enough.
+It's really hard to decide which parts are missing and should be extended.

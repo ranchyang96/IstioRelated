@@ -1,0 +1,52 @@
+Generally, there is a large queue for all requests through the network stored in service mesh.
+For each node, it contains a queue of its own requests.
+Each application has a message queue and request list for processing and retransmissions.
+Priority is maintained according to the remaining time for a request.
+Priority queues with multiprocessing is implemented.
+
+ServiceMesh
+queue, node_ids, apps, start_time, end_time
+run():
+routing rules, fault_injection & parse rules, setup_network, a new thread for queuing system, stop nodes
+setup_network():
+node_ids, app_config construction, app_configs appended
+start_nodes():
+manager and queue with patched PriorityQueue, generate_node_env(node_id, queue)
+generate_node_env():
+loop which stops when it reaches end_time
+parse data in the queue, commands(END, START_APP, SEND_MSG) sent to the node
+start_apps():
+add the start_app request to the service mesh queue
+run_queuing_system():
+loop until it reaches end_time
+- get message from queue (unblock)
+- deal with UP messages
+  * START_APP: get app id and replica id, record request sender id in apps
+  * SEND_MSG: routing with choose_app_instance from routing.txt; fault_injection with choose_delay from fault_injection.txt
+
+Node
+nodeID, apps, queue, start_time
+get_app(): return app object with a specific app_id
+send_msg_app(): send a message down to the specific app
+send_msg_network(): send up to the mesh
+start_app(): create app object, parse app requests, app.add_msg, create a thread for app_running, put START_APP into node's request queue
+parse_app_requests(): find requests that match the nodeID, appID, replicaID
+
+App
+node, app_id, replica_id, processing_delay, status(UP/DOWN), msg_queue, start_time, requests, num_retransmission, request_timeout, log_file
+add_msg(): add to message_queue
+message_system(): infinite loop, keep processing:
+- get message from message_queue
+  * PROCESS: process_msg()
+  * SEND: send_msg()
+  * REQUEST_TIMEOUT: msg_id used as the retransmit count
+process_msg:
+- INIT: priority based on remaining time
+- SYN: processing_time from delay using random normal
+- ACK: delete or already retransmitted
+send_msg: node_send_msg_network
+
+Configuration
+Routing_rules: app_id, replica_set, percentage of flows
+Fault_injection: app_id, replica_set, percentage of faults, delay time
+Fault_detection
