@@ -1,0 +1,31 @@
+CloudCmp: Shopping for a Cloud Made Easy
+Abstract:
+help customers estimate performance without actually deploying the app
+Introduction:
+ * cloud computing background, motivation
+ * service models, pricing models, workloads difference
+ * proposed framework
+ * measurements and comparison
+	- AWS, Azure, AppEngine, CloudServers, CloudSites, GoGrid
+Cloud Computing Services
+ *********** table about four services
+	- Elastic Compute Cluster: free CPU hours given
+	- Persistent Storage Service: operation's complexity
+	- Intra-Cloud Network
+	- Wide-area Delivery Work
+CloudCamp Framework
+- Service Benchmark
+ * Java for a standard set of CPU, memory and I/O tasks
+- Application Workload Collection
+ * collect request trace and execution path
+- Performance Prediction
+ * with previous generated profile in service benchmarking, estimate the time and costs of each component on the execution path
+ * figure of estimation shown
+Benchmarking Results
+ *********** figures of benchmarking result (time and costs, scaling)
+ *********** figure of persistent storage service (entry number, insert/fetch)
+ *********** table of throughput
+ *********** figure of RTT cumulative fraction
+Related Work
+Conclusion and Future Work
+References

@@ -1,0 +1,54 @@
+Design patterns for container-based distributed systems
+
+structure:
+intro, DS design patterns, single-container patterns, singlenode multicontainer application patterns, multinode application patterns, related work, conclusion, acknowledgement
+for each pattern introduction:
+	diagram showing the structure of each example
+	how it is working, when it is applied
+
+modularize distributed systems
+
+three design patterns for container-based systems:
+
+** single-container patterns for container management
+
+this single container provides a natural boundary for defining an interface
+container management interface is new: traditional ones reveals only run pause stop three APIs, really limited
+now:
+upward: expose application infos;
+downward: container interface provides a natural place to define a lifecycle to keep software controlled by a management system
+define signals for the ensurance of the lifecycle
+a series of callbacks and signals form a FSM to make the container robust
+
+**single-node patterns for closely cooperating containers
+
+https://kubernetes.io/blog/2015/06/the-distributed-system-toolkit-patterns/
+patterns:
+..sidecar pattern: enhance a container from side
+Example: a git synchronizer, test synchronizer once and reuse it across multiple Apps; a log saver
+Benefits: work as resource allocation; separate responsibility, testing and programming; unit of reuse, can be paired;
+failure containment is good; unit of deployment, easy to upgrade functions
+
+..ambassador pattern: proxy communication, design rules
+Benefits: only need to consider the case of a single server because of the proxy container; easier for tests; reuse proxy for other Apps
+
+..adapter pattern: transform heterogeneous data into same form, standardizing outputs
+Example: App monitoring, transform data of different machines into the same model
+
+**multi-node patterns for distributed systems
+
+..leader election: after the algorithm is run, a particular node work as task leader
+Example: radio network decides who to transmit
+To link the leader election library to the application is to use a leader election container.
+a set of leader election containers, each one co-scheduled with an app that requires leader election
+
+..work queue pattern:
+previous limit to single language or distribution left to implementer
+Now only need to build a container which can take an input file and transform it to an output
+???
+
+..scatter/gather pattern: P processes with order 1-P and one of it has a array to scatter each item to corresponding process. gather reverse
+parent/root fan out info and after calculation collect results
+can be like a tree
+two containers needed: leaf node computation container and merge container
+
