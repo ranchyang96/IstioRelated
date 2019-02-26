@@ -1,0 +1,54 @@
+Thinking about Availability in Large Service Infrastructures
+Google MTV
+
+1  Introduction
+cloud current states and applications
+necessity for e2e approach to availability
+structure of the paper
+
+1.1Context
+motivation to improve availability: more people rely on SaaS services, growth of IaaS makes availability more critical
+
+2  A simple case study
+Figure of Traffic Engineering infrastructure
+
+3  Defining infrastructural availability
+definition of availability: SLO: (SL Indicators, comparator, threshold) while real-world SLO are multi-dimensional
+
+3.1Reasons for multi-dimensional SLOs
+Performance and availability
+
+3.2Dimensionality reduction
+tiered SLO
+
+3.3Choosing sub-system SLOs
+top-level SLOs to individual SLOs for component sub-systems
+
+3.4Tactical vs strategic SLOs
+Questions to discuss, somewhat gives the answer
+
+4  Availability is like security ... somewhat
+threat model, hard to anticipate, immunity to future ones
+
+4.1Analogous operational practices
+requires good adherence to good operational practices
+reviews give good security, penetration tests (disaster recovery)
+
+5  Past research: successes and gaps
+router protocol, performance and scaling
+taxonomies of metrics
+
+6  Techniques for improving availability
+key insights
+not in one layer, integrated solution
+fail static
+avoid cyclic dependencies
+
+6.1Availability is not just avoiding failure
+also when mean time to repair is too high
+
+7  Next Steps
+multidimensional SLI
+sub-system SLOs
+prediction whether it meets SLO
+decision of the usage of design patterns

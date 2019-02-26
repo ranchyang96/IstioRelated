@@ -1,0 +1,32 @@
+A First Look at Problems in the Cloud
+
+Abstract
+Understanding the design of IaaS support models for efficient user troubleshooting
+
+Introduction
+background of IaaS cloud, what's presented in the paper, important findings listed
+
+Background and Motivation
+user faced problems like unexpected outages, isolation between users, invalid assumptions about the operating environment
+existing support model
+
+Data & Methodology
+data set used for the survey
+methods used when extracting problem clusters and the challenges when doing these
+limitation of the study
+
+Problems faced by Users
+key observations
+categorites of the survey (Figure of taxonomy)
+evolution of problems for users over time (yearly and monthly)(figure)
+operator involvement causes problems(figure of percentage and evolution)
+cloud support model (support for forum messages) (figure of operator, customer, number of forum posts resolution time and response time)
+
+Related Work
+Where the basic ideas come from, limits
+recent work towards the limits
+cloud management work helps
+
+Conclusion
+study of ... aspects
+key observations
