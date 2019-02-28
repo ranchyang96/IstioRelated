@@ -1,0 +1,5 @@
+System calls:
+os.Exit() in istio/istio
+syscall.Read() in istio/istio
+syscall.Write() in istio/istio
+
