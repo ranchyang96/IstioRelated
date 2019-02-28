@@ -1,5 +1,25 @@
+The most important parts of the codes are in security, pilot, mixer directories, istioctl also includes some CLIs.
+So during the analysis, we only focus on these codes.
+
 System calls:
 os.Exit() in istio/istio
 syscall.Read() in istio/istio
 syscall.Write() in istio/istio
+There are loads of system calls in the syscall package and we can just find them according to the package.
 
+Wrong updates:
+Global variables are mostly defined in main.go.
+There are 50+ main.go files in the istio/istio repo.
+Global variables are defined by var or in a large ''var'' list.
+A few examples: exitCode in adapterlinter, port, address, logoptions in policybackend, etc.
+
+Operating system events:
+os.Remove
+os.Setenv
+os.File
+os.Stat
+This is somehow overlapped with system calls. open and read, close and exit.
+
+information processing:
+There are loads of URL.path in pilot and security, usually used in requests and ms.
+They are defined as pure String. We can parse them and modify a little part in the case.
